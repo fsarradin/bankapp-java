@@ -10,6 +10,8 @@ import java.nio.charset.Charset;
 public class MyHttpServer {
 
     public static void closeWith(HttpExchange exchange, int responseCode, String content) throws IOException {
+        System.out.println(exchange.getRequestURI().getPath() +  " [" + responseCode + "]: " + content);
+
         String query = exchange.getRequestURI().getQuery();
         String body = (query != null) ? query.split("[&=]")[1] + "(" + content + ")" : content;
 
@@ -41,6 +43,10 @@ public class MyHttpServer {
 
             System.out.println("Server running on port " + port + "...");
             server.start();
+        }
+
+        public void withRoute(RouteMatcher... routeMatchers) throws IOException {
+            with(new Route(routeMatchers));
         }
 
     }
