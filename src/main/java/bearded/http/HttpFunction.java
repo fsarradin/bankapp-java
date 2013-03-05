@@ -6,6 +6,6 @@ import java.io.IOException;
 
 public interface HttpFunction {
 
-    void apply(HttpExchange httpExchange) throws IOException;
+    String apply(HttpExchange httpExchange) throws IOException;
 
 }

@@ -1,9 +1,6 @@
 package bearded.monad;
 
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.NoSuchElementException;
+import java.util.*;
 import java.util.function.Function;
 
 public abstract class Option<T> implements Iterable<T> {
@@ -14,7 +11,9 @@ public abstract class Option<T> implements Iterable<T> {
 
     public abstract T getOrElse(T defaultValue);
 
-    protected abstract List<T> toList();
+    public abstract List<T> toList();
+
+    public abstract Set<T> toSet();
 
     public abstract <U> Option<U> flatMap(Function<T, Option<U>> f);
 
@@ -40,8 +39,13 @@ public abstract class Option<T> implements Iterable<T> {
             }
 
             @Override
-            protected List<U> toList() {
+            public List<U> toList() {
                 return Collections.singletonList(value);
+            }
+
+            @Override
+            public Set<U> toSet() {
+                return Collections.singleton(value);
             }
 
             @Override
@@ -49,11 +53,19 @@ public abstract class Option<T> implements Iterable<T> {
                 return  f.apply(value);
             }
 
+            @Override
+            public String toString() {
+                return "Some(" + value + ")";
+            }
         };
     }
 
     public static <U> Option<U> None() {
         return (Option<U>) NONE;
+    }
+
+    public static <U> Option<U> None(Class<U> contract) {
+        return None();
     }
 
 
@@ -69,13 +81,23 @@ public abstract class Option<T> implements Iterable<T> {
         }
 
         @Override
-        protected List<Object> toList() {
+        public List<Object> toList() {
             return Collections.emptyList();
+        }
+
+        @Override
+        public Set<Object> toSet() {
+            return Collections.emptySet();
         }
 
         @Override
         public <U> Option<U> flatMap(Function<Object, Option<U>> f) {
             return None();
+        }
+
+        @Override
+        public String toString() {
+            return "None";
         }
     };
 }

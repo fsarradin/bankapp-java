@@ -1,6 +1,7 @@
 package bearded.http;
 
 import com.sun.net.httpserver.HttpExchange;
+import com.sun.net.httpserver.HttpHandler;
 import com.sun.net.httpserver.HttpServer;
 
 import java.io.IOException;
@@ -39,7 +40,16 @@ public class MyHttpServer {
         public void with(Route route) throws IOException {
             HttpServer server = HttpServer.create(new InetSocketAddress(port), 0);
 
-            server.createContext(root, route::match);
+            server.createContext(root, httpExchange -> {
+                try {
+                    String content = route.match(httpExchange);
+
+                    closeWith(httpExchange, 200, content);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                    closeWith(httpExchange, 500, e.getMessage());
+                }
+            });
 
             System.out.println("Server running on port " + port + "...");
             server.start();

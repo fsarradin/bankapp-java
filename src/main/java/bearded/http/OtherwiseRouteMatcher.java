@@ -18,8 +18,8 @@ public class OtherwiseRouteMatcher implements RouteMatcher {
     }
 
     @Override
-    public void apply(HttpExchange httpExchange) throws IOException {
-        httpFunction.apply(httpExchange);
+    public String apply(HttpExchange httpExchange) throws IOException {
+        return httpFunction.apply(httpExchange);
     }
 
 }

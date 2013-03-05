@@ -14,11 +14,10 @@ public class Route {
         this.routeMatchers = Arrays.asList(routeMatchers);
     }
 
-    public void match(HttpExchange httpExchange) throws IOException {
+    public String match(HttpExchange httpExchange) throws IOException {
         for (RouteMatcher routeMatcher : routeMatchers) {
             if (routeMatcher.match(httpExchange)) {
-                routeMatcher.apply(httpExchange);
-                return;
+                return routeMatcher.apply(httpExchange);
             }
         }
 
