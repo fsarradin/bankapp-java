@@ -1,17 +1,18 @@
 package bearded.bank;
 
-import bearded.bank.base.AccountRepository;
+import bearded.bank.withoption.AccountRepository;
 import bearded.entity.Account;
 import bearded.entity.AliceProperties;
+import com.google.common.base.Optional;
+import com.google.common.collect.FluentIterable;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.Map;
 
 import static bearded.entity.AliceProperties.PRINCIPAL_ACCOUNT;
 import static bearded.entity.AliceProperties.PRINCIPAL_BANK;
-import static bearded.http.MyHttpServer.closeWith;
+import static com.google.common.collect.FluentIterable.from;
 
 public class BankService {
 
@@ -22,44 +23,58 @@ public class BankService {
     }
 
     public String getPrincipalBalance(HttpExchange httpExchange) throws IOException {
-        Account account = accountRepository.getAccount(PRINCIPAL_BANK, PRINCIPAL_ACCOUNT);
+        Optional<Account> account = accountRepository.getAccount(PRINCIPAL_BANK, PRINCIPAL_ACCOUNT);
 
-        return "{ \"balance\": \"" + account.getBalance() + "\" }";
+        if (!account.isPresent()) {
+            return "{ \"error\": \"bad value\" }";
+        }
+        return "{ \"balance\": \"" + account.get().getBalance() + "\" }";
     }
 
     public String getTotalBalance(HttpExchange httpExchange) throws IOException {
-        double totalBalance = 0.0;
+        FluentIterable<Optional<Double>> balances =
+                from(AliceProperties.getBankNames()).transformAndConcat(bankName ->
+                        from(AliceProperties.getAccountNumbersIn(bankName)).transform(accountNumber ->
+                                accountRepository.getAccount(bankName, accountNumber).transform(Account::getBalance)
+                        )
+                );
 
-        for (String bankName : AliceProperties.getBankNames()) {
-            for (String accountNumber : AliceProperties.getAccountNumbersIn(bankName)) {
-                Account account = accountRepository.getAccount(bankName, accountNumber);
-                if (account != null) {
-                    totalBalance += account.getBalance();
-                }
-            }
+        if (balances.filter(o -> !o.isPresent()).size() > 0) {
+            return "{ \"error\": \"bad value\" }";
         }
 
-        return "{ \"total\": \"" + totalBalance + "\" }";
+        Double sum = balances
+                .transformAndConcat(o -> o.asSet())
+                .toImmutableList().stream()
+                .reduce(0.0, (s, b) -> s + b);
+        return "{ \"total\": \"" + sum + "\" }";
 
     }
 
     public String getBalanceByBank(HttpExchange httpExchange) throws IOException {
-        Set<String> bankInfo = new HashSet<>();
+        FluentIterable<String> bankInfos =
+                from(AliceProperties.getBankNames()).transform(bankName -> {
+                    FluentIterable<Optional<Double>> balances =
+                            from(AliceProperties.getAccountNumbersIn(bankName)).transform(accountNumber ->
+                                    accountRepository.getAccount(bankName, accountNumber).transform(Account::getBalance)
+                            );
 
-        for (String bankName : AliceProperties.getBankNames()) {
-            double totalBalance = 0.0;
+                    if (balances.filter(o -> !o.isPresent()).size() > 0) {
+                        return "{\"name\": \"" + bankName + "\", \"error\": \"bad value\" }";
+                    }
 
-            for (String accountNumber : AliceProperties.getAccountNumbersIn(bankName)) {
-                Account account = accountRepository.getAccount(bankName, accountNumber);
-                if (account != null) {
-                    totalBalance += account.getBalance();
-                }
-            }
+                    Double sum = balances
+                            .transformAndConcat(o -> o.asSet())
+                            .toImmutableList().stream()
+                            .reduce(0.0, (s, b) -> s + b);
+                    return "{\"name\": \"" + bankName + "\", \"balance\": \"" + sum + "\" }";
+                });
 
-            bankInfo.add("{\"name\":\"" + bankName + "\", \"balance\":\"" + totalBalance + "\"}");
-        }
+        return "[" + String.join(", ", bankInfos) + "]";
+    }
 
-        return "[" + String.join(", ", bankInfo) + "]";
+    public static BankService createBankService(Map<String, BankAccessor> bankAccessors) {
+        return new BankService(AccountRepository.apply(bankAccessors));
     }
 
 }

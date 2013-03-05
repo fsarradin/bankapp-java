@@ -1,7 +1,8 @@
-package bearded.bank.base;
+package bearded.bank.withoption;
 
 import bearded.bank.BankAccessor;
 import bearded.entity.Account;
+import com.google.common.base.Optional;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,14 +15,12 @@ public class AccountRepository {
         this.bankProxies = bankProxies;
     }
 
-    public Account getAccount(String bankName, String accountNumber) {
-        if (!bankProxies.containsKey(bankName)) {
-            return null;
-        }
+    public Optional<Account> getAccount(String bankName, String accountNumber) {
+        Optional<Account> none = Optional.absent();
 
-        BankProxy bankProxy = bankProxies.get(bankName);
-
-        return bankProxy.getAccountByNumber(accountNumber);
+        return Optional.fromNullable(bankProxies.get(bankName)).transform(proxy ->
+                proxy.getAccountByNumber(accountNumber)
+        ).or(none);
     }
 
     public static AccountRepository apply(Map<String, BankAccessor> accessors) {
