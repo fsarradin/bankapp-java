@@ -17,9 +17,7 @@ public class WebBankMain {
 
         MyHttpServer.serve(8080, "/").withRoute(
 
-                inCaseOf("banks", bankService::getBalanceByBank),
                 inCaseOf("total", bankService::getTotalBalance),
-                inCaseOf("principal", bankService::getPrincipalBalance),
 
                 otherwise(WebBankMain::notFound404)
 

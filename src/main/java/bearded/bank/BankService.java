@@ -3,16 +3,14 @@ package bearded.bank;
 import bearded.bank.withtry.AccountRepository;
 import bearded.entity.Account;
 import bearded.monad.Try;
-import bearded.monad.Validation;
 import com.sun.net.httpserver.HttpExchange;
 
-import java.io.IOException;
-import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import static bearded.entity.AliceProperties.*;
+import static bearded.entity.AliceProperties.getAccountNumbersIn;
+import static bearded.entity.AliceProperties.getBankNames;
+import static bearded.monad.Try.Success;
 
 public class BankService {
 
@@ -20,21 +18,6 @@ public class BankService {
 
     public BankService(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
-    }
-
-
-    /*
-     * PRINCIPAL BALANCE
-     *
-     */
-
-    public String getPrincipalBalance(HttpExchange httpExchange) {
-        Try<Account> account = accountRepository.getAccount(PRINCIPAL_BANK, PRINCIPAL_ACCOUNT);
-
-        if (!account.isSuccess()) {
-            return "{ \"error\": \"" + account.getError().getMessage() + "\" }";
-        }
-        return "{ \"balance\": \"" + account.map(Account::getBalance) + "\" }";
     }
 
 
@@ -53,52 +36,17 @@ public class BankService {
                         )
                 );
 
-        Try<Double> sum = balancesStream
-                .reduce(Try.Success(0.0), this::addBalances);
+        Try<Double> total = balancesStream
+                .reduce(Success(0.0), this::addBalances);
 
-        if (!sum.isSuccess()) {
-            return "{ \"error\": \"" + sum.getError().getMessage() + "\" }";
+        if (!total.isSuccess()) {
+            return "{ \"error\": \"" + total.getError().getMessage() + "\" }";
         }
 
-        return "{ \"total\": \"" + sum.get() + "\" }";
+        return "{ \"total\": \"" + total.get() + "\" }";
 
     }
 
-
-    /*
-     * BALANCE BY BANK
-     *
-     */
-
-    public String getBalanceByBank(HttpExchange httpExchange) {
-        List<String> bankInfos =
-                getBankNames().stream().map(bankName -> {
-                    Try<Double> sum = getBalancesFor(bankName)
-                            .reduce(Try.Success(0.0), this::addBalances);
-
-                    if (!sum.isSuccess()) {
-                        return "{\"name\": \"" + bankName + "\", \"error\": \"" + sum.getError().getMessage() + "\" }";
-                    }
-
-                    return "{\"name\": \"" + bankName + "\", \"balance\": \"" + sum.get() + "\" }";
-                }
-                ).collect(Collectors.toList());
-
-        return "[" + String.join(", ", bankInfos) + "]";
-    }
-
-    private Stream<Try<Double>> getBalancesFor(String bankName) {
-        return getAccountNumbersIn(bankName).stream().map(accountNumber ->
-                accountRepository.getAccount(bankName, accountNumber)
-                        .map(Account::getBalance)
-        );
-    }
-
-
-    /*
-     * OTHERS...
-     *
-     */
 
     private Try<Double> addBalances(Try<Double> m1,
                                     Try<Double> m2) {
