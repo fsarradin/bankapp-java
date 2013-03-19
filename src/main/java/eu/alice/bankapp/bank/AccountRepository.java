@@ -1,7 +1,7 @@
 package eu.alice.bankapp.bank;
 
 import eu.alice.bankapp.entity.Account;
-import eu.alice.bankapp.Try;
+import eu.alice.bankapp.monad.Try;
 
 import java.util.HashMap;
 import java.util.Map;

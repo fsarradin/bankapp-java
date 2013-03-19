@@ -1,7 +1,7 @@
 package eu.alice.bankapp.bank;
 
-import eu.alice.bankapp.entity.Account;
 import com.google.common.collect.ImmutableMap;
+import eu.alice.bankapp.entity.Account;
 
 import java.util.Map;
 

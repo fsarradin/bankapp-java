@@ -1,9 +1,7 @@
 package eu.alice.bankapp.bank;
 
-import eu.alice.bankapp.bank.BankAccessor;
-import eu.alice.bankapp.bank.BankException;
 import eu.alice.bankapp.entity.Account;
-import eu.alice.bankapp.Try;
+import eu.alice.bankapp.monad.Try;
 
 public class BankProxy {
 

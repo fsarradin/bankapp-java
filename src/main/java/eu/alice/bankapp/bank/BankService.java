@@ -1,15 +1,15 @@
 package eu.alice.bankapp.bank;
 
-import eu.alice.bankapp.entity.Account;
-import eu.alice.bankapp.Try;
 import com.sun.net.httpserver.HttpExchange;
+import eu.alice.bankapp.entity.Account;
+import eu.alice.bankapp.monad.Try;
 
 import java.util.Map;
 import java.util.stream.Stream;
 
 import static eu.alice.bankapp.entity.AliceProperties.getAccountNumbersIn;
 import static eu.alice.bankapp.entity.AliceProperties.getBankNames;
-import static eu.alice.bankapp.Try.Success;
+import static eu.alice.bankapp.monad.Try.Success;
 
 public class BankService {
 

@@ -1,9 +1,9 @@
 package eu.alice.bankapp;
 
+import com.sun.net.httpserver.HttpExchange;
 import eu.alice.bankapp.bank.BankConnection;
 import eu.alice.bankapp.bank.BankService;
 import eu.alice.bankapp.http.MyHttpServer;
-import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 

@@ -1,4 +1,4 @@
-package eu.alice.bankapp;
+package eu.alice.bankapp.monad;
 
 import java.util.NoSuchElementException;
 import java.util.function.Function;
