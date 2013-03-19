@@ -9,6 +9,7 @@ import java.util.stream.Stream;
 
 import static eu.alice.bankapp.entity.AliceProperties.getAccountNumbersIn;
 import static eu.alice.bankapp.entity.AliceProperties.getBankNames;
+import static eu.alice.bankapp.monad.Try.Failure;
 import static eu.alice.bankapp.monad.Try.Success;
 
 public class BankService {
@@ -26,24 +27,23 @@ public class BankService {
      */
 
     public String getTotalBalance(HttpExchange httpExchange) {
-        Stream<Try<Double>> balancesStream =
+        // get all balances
+        Stream<Try<Double>> balances =
                 getBankNames().stream().flatMap(bankName ->
-                        getAccountNumbersIn(bankName).stream().map(accountNumber ->
-                                accountRepository
-                                        .getAccount(bankName, accountNumber)
-                                        .map(Account::getBalance)
-                        )
+                        getAccountNumbersIn(bankName).stream().map(accountNumber -> {
+                            Try<Account> account = accountRepository.getAccount(bankName, accountNumber);
+                            return account.map(Account::getBalance);
+                        })
                 );
 
-        Try<Double> total = balancesStream
-                .reduce(Success(0.0), this::addBalances);
+        // compute the total balance
+        Try<Double> total = balances.reduce(Success(0.0), this::addBalances);
 
+        // build JSON response
         if (!total.isSuccess()) {
             return "{ \"error\": \"" + total.getError().getMessage() + "\" }";
         }
-
         return "{ \"total\": \"" + total.get() + "\" }";
-
     }
 
 
@@ -52,11 +52,8 @@ public class BankService {
         if (m1.isSuccess() || m2.isSuccess()) {
             return m1.flatMap(x -> m2.map(y -> x + y));
         }
-
-        return Try.Failure(
-                new BankException(
-                        m1.getError().getMessage() + "," + m2.getError().getMessage()
-                ));
+        return Failure(new BankException(
+                m1.getError().getMessage() + "," + m2.getError().getMessage()));
     }
 
 
