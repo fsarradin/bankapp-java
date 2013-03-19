@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+    <title>Accounts</title>
+    <meta charset="UTF-8" />
+    <link href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/css/bootstrap-combined.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="navbar">
+    <div class="navbar-inner">
+        <div class="container">
+            <a class="brand" href="#">Accounts</a>
+        </div>
+    </div>
+</div>
+
+<h3>Banks</h3>
+
+<div id="banks"></div>
+
+<div>
+    <strong>Total</strong>: <span id="total"></span>
+</div>
+
+<div id="principal"></div>
+
+</body>
+
+<script src="http://cdnjs.cloudflare.com/ajax/libs/mustache.js/0.7.0/mustache.min.js"></script>
+<script src="http://cdnjs.cloudflare.com/ajax/libs/jquery/1.8.3/jquery.min.js"></script>
+<script src="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.2.2/js/bootstrap.min.js"></script>
+
+<script>
+    function getUrlOf(service) {
+        return "http://localhost:8080/" + service + "/?callback=?";
+    }
+
+    function bindService(service) {
+        $.getJSON(getUrlOf(service), function (json) {
+            $('#' + service).html(Mustache.to_html($('#template-' + service).html(), json));
+        });
+    }
+
+    bindService("banks");
+    bindService("total");
+    bindService("principal");
+</script>
+
+<script id="template-banks" type="text/template">
+    <table class="table table-striped">
+        <tr>
+            <th>Name</th>
+            <th>Balance</th>
+        </tr>
+        {{#.}}
+        <tr>
+            <td>{{name}}</td>
+            <td>{{balance}}</td>
+        </tr>
+        {{/.}}
+    </table>
+</script>
+
+<script id="template-total" type="text/template">
+    {{total}}
+</script>
+
+<script id="template-principal" type="text/template">
+    <strong>Balance of principal</strong>:
+    {{#balance}}{{balance}}{{/balance}}
+    {{#error}}<span style="color: red">{{error}}</span>{{/error}}
+</script>
+
+</html>
