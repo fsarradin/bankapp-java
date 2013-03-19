@@ -1,4 +1,4 @@
-package bearded.http;
+package eu.alice.bankapp.http;
 
 import com.sun.net.httpserver.HttpExchange;
 

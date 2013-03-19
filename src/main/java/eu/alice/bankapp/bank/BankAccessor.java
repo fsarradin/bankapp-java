@@ -1,6 +1,6 @@
-package bearded.bank;
+package eu.alice.bankapp.bank;
 
-import bearded.entity.Account;
+import eu.alice.bankapp.entity.Account;
 
 import java.util.Map;
 

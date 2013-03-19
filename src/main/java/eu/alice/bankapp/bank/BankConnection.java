@@ -1,11 +1,11 @@
-package bearded.bank;
+package eu.alice.bankapp.bank;
 
-import bearded.entity.Account;
+import eu.alice.bankapp.entity.Account;
 import com.google.common.collect.ImmutableMap;
 
 import java.util.Map;
 
-import static bearded.entity.AliceProperties.Alice;
+import static eu.alice.bankapp.entity.AliceProperties.Alice;
 
 public class BankConnection {
 

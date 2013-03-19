@@ -1,4 +1,4 @@
-package bearded.entity;
+package eu.alice.bankapp.entity;
 
 public class Account {
     private final String owner;

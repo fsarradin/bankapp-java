@@ -1,4 +1,4 @@
-package bearded.monad;
+package eu.alice.bankapp;
 
 import java.util.NoSuchElementException;
 import java.util.function.Function;

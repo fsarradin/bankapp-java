@@ -1,7 +1,7 @@
-package bearded.bank.base;
+package eu.alice.bankapp.bank;
 
-import bearded.bank.BankAccessor;
-import bearded.entity.Account;
+import eu.alice.bankapp.entity.Account;
+import eu.alice.bankapp.Try;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,12 +14,12 @@ public class AccountRepository {
         this.bankProxies = bankProxies;
     }
 
-    public Account getAccount(String bankName, String accountNumber) {
-        if (!bankProxies.containsKey(bankName)) {
-            return null;
-        }
-
+    public Try<Account> getAccount(String bankName, String accountNumber) {
         BankProxy bankProxy = bankProxies.get(bankName);
+
+        if (bankProxy == null) {
+            return Try.Failure(new BankException("unknown bank name" + bankName));
+        }
 
         return bankProxy.getAccountByNumber(accountNumber);
     }

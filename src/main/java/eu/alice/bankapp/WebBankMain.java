@@ -1,14 +1,14 @@
-package bearded;
+package eu.alice.bankapp;
 
-import bearded.bank.BankConnection;
-import bearded.bank.BankService;
-import bearded.http.MyHttpServer;
+import eu.alice.bankapp.bank.BankConnection;
+import eu.alice.bankapp.bank.BankService;
+import eu.alice.bankapp.http.MyHttpServer;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.io.IOException;
 
-import static bearded.http.Route.inCaseOf;
-import static bearded.http.Route.otherwise;
+import static eu.alice.bankapp.http.Route.inCaseOf;
+import static eu.alice.bankapp.http.Route.otherwise;
 
 public class WebBankMain {
 

@@ -1,4 +1,4 @@
-package bearded.entity;
+package eu.alice.bankapp.entity;
 
 import com.google.common.collect.ImmutableSetMultimap;
 import com.google.common.collect.Multimap;

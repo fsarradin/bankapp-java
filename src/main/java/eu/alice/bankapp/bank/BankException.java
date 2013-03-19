@@ -1,4 +1,4 @@
-package bearded.bank;
+package eu.alice.bankapp.bank;
 
 public class BankException extends RuntimeException {
 

@@ -1,16 +1,15 @@
-package bearded.bank;
+package eu.alice.bankapp.bank;
 
-import bearded.bank.withtry.AccountRepository;
-import bearded.entity.Account;
-import bearded.monad.Try;
+import eu.alice.bankapp.entity.Account;
+import eu.alice.bankapp.Try;
 import com.sun.net.httpserver.HttpExchange;
 
 import java.util.Map;
 import java.util.stream.Stream;
 
-import static bearded.entity.AliceProperties.getAccountNumbersIn;
-import static bearded.entity.AliceProperties.getBankNames;
-import static bearded.monad.Try.Success;
+import static eu.alice.bankapp.entity.AliceProperties.getAccountNumbersIn;
+import static eu.alice.bankapp.entity.AliceProperties.getBankNames;
+import static eu.alice.bankapp.Try.Success;
 
 public class BankService {
 

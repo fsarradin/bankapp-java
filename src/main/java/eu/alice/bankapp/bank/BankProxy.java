@@ -1,9 +1,9 @@
-package bearded.bank.withtry;
+package eu.alice.bankapp.bank;
 
-import bearded.bank.BankAccessor;
-import bearded.bank.BankException;
-import bearded.entity.Account;
-import bearded.monad.Try;
+import eu.alice.bankapp.bank.BankAccessor;
+import eu.alice.bankapp.bank.BankException;
+import eu.alice.bankapp.entity.Account;
+import eu.alice.bankapp.Try;
 
 public class BankProxy {
 
